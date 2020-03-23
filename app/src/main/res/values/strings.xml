@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HeadHunter</string>
+    <string name="error">Something went wrong. Try again.</string>
+    <string name="vacancy">Vacancy</string>
+</resources>

@@ -30,14 +30,19 @@ import io.reactivex.schedulers.Schedulers;
 public class VacanciesFragment extends Fragment implements Refreshable,
         VacanciesAdapter.OnItemClickListener{
 
+    public static final String SEARCH_TEXT = "SEARCH_TEXT";
+
     private VacanciesAdapter vacancyAdapter;
     private RecyclerView recyclerView;
     private RefreshOwner refreshOwner;
     private View errorView;
     private Disposable disposable;
+    private String searchText;
 
-    public static VacanciesFragment newInstance(){
-        return new VacanciesFragment();
+    static Fragment newInstance(Bundle args){
+        VacanciesFragment fragment = new VacanciesFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -69,6 +74,10 @@ public class VacanciesFragment extends Fragment implements Refreshable,
             getActivity().setTitle("Vacancies");
         }
 
+        if (getArguments() != null){
+            searchText = getArguments().getString(SEARCH_TEXT);
+        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -95,7 +104,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     }
 
     private void getVacancies(){
-        disposable = ApiUtils.getApiService().getVacancies(StartSearchActivity.searchText)
+        disposable = ApiUtils.getApiService().getVacancies(searchText)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable1 -> refreshOwner.setRefreshState(true))
@@ -115,7 +124,6 @@ public class VacanciesFragment extends Fragment implements Refreshable,
 
     @Override
     public void onItemClick(String id){
-        //переход к вакансии
         Intent intent = new Intent(getActivity(), VacancyActivity.class);
         Bundle args = new Bundle();
         args.putString(VacancyFragment.VACANCY_ID, id);

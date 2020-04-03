@@ -41,7 +41,7 @@ public class VacancyFragment extends Fragment implements Refreshable{
 
     private String vacancyId;
 
-    public static Fragment newInstance(Bundle args){
+    static Fragment newInstance(Bundle args){
         VacancyFragment fragment = new VacancyFragment();
         fragment.setArguments(args);
         return fragment;

@@ -18,7 +18,7 @@ public class VacanciesAdapter extends RecyclerView.Adapter<VacanciesHolder>{
 
     private final OnItemClickListener mOnItemClickListener;
 
-    public VacanciesAdapter(OnItemClickListener onItemClickListener){
+    VacanciesAdapter(OnItemClickListener onItemClickListener){
         mOnItemClickListener = onItemClickListener;
     }
 

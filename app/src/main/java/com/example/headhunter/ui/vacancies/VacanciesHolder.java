@@ -1,29 +1,26 @@
-package com.example.headhunter.ui;
+package com.example.headhunter.ui.vacancies;
 
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.headhunter.R;
-import com.example.headhunter.data.model.Vacancy;
+import com.example.headhunter.data.data.model.Vacancy;
 
-class VacancyHolder extends RecyclerView.ViewHolder{
+class VacanciesHolder extends RecyclerView.ViewHolder{
 
     private TextView textViewTitle;
     private TextView textViewDescription;
 
-    VacancyHolder(View itemView){
+    VacanciesHolder(View itemView){
         super(itemView);
         textViewTitle = itemView.findViewById(R.id.tv_title);
         textViewDescription = itemView.findViewById(R.id.tv_description);
     }
 
 
-    void bind(Vacancy vacancy){
-        textViewTitle.setText(vacancy.getTitle());
-        textViewDescription.setText(vacancy.getDescription());
+    void bind(Vacancy.ItemsBean vacancy){
+        textViewTitle.setText(vacancy.getName());
+        textViewDescription.setText(vacancy.getSnippet().getResponsibility());
     }
 }

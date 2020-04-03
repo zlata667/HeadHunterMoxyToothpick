@@ -1,11 +1,12 @@
 package com.example.headhunter.ui.vacancies;
 
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.headhunter.R;
-import com.example.headhunter.data.data.model.Vacancy;
+import com.example.headhunter.data.model.Vacancies;
 
 class VacanciesHolder extends RecyclerView.ViewHolder{
 
@@ -18,9 +19,13 @@ class VacanciesHolder extends RecyclerView.ViewHolder{
         textViewDescription = itemView.findViewById(R.id.tv_description);
     }
 
-
-    void bind(Vacancy.ItemsBean vacancy){
+    void bind(Vacancies.ItemsBean vacancy, VacanciesAdapter.OnItemClickListener onItemClickListener){
         textViewTitle.setText(vacancy.getName());
-        textViewDescription.setText(vacancy.getSnippet().getResponsibility());
+        if (vacancy.getSnippet().getResponsibility() != null){
+            textViewDescription.setText(Html.fromHtml(vacancy.getSnippet().getResponsibility()));
+        }
+        if (onItemClickListener != null){
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(vacancy.getId()));
+        }
     }
 }

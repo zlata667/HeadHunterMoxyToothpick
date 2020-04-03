@@ -1,11 +1,11 @@
 package com.example.headhunter.ui.vacancies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,13 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.headhunter.R;
 import com.example.headhunter.common.RefreshOwner;
 import com.example.headhunter.common.Refreshable;
-import com.example.headhunter.data.data.model.Vacancy;
+
 import com.example.headhunter.ui.startApp.StartSearchActivity;
+import com.example.headhunter.ui.vacancy.VacancyActivity;
+import com.example.headhunter.ui.vacancy.VacancyFragment;
 import com.example.headhunter.utils.ApiUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class VacanciesFragment extends Fragment implements Refreshable,
@@ -113,7 +114,12 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     }
 
     @Override
-    public void onItemClick(Vacancy.ItemsBean vacancy){
+    public void onItemClick(String id){
         //переход к вакансии
+        Intent intent = new Intent(getActivity(), VacancyActivity.class);
+        Bundle args = new Bundle();
+        args.putString(VacancyFragment.VACANCY_ID, id);
+        intent.putExtra(VacancyActivity.VACANCY_KEY, args);
+        startActivity(intent);
     }
 }

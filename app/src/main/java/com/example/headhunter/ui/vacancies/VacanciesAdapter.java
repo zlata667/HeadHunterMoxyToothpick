@@ -3,14 +3,12 @@ package com.example.headhunter.ui.vacancies;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.headhunter.R;
-import com.example.headhunter.data.data.model.Vacancy;
+import com.example.headhunter.data.model.Vacancies;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +23,7 @@ public class VacanciesAdapter extends RecyclerView.Adapter<VacanciesHolder>{
     }
 
     @NonNull
-    private final List<Vacancy.ItemsBean> vacancyList = new ArrayList<>();
+    private final List<Vacancies.ItemsBean> vacancyList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -37,7 +35,7 @@ public class VacanciesAdapter extends RecyclerView.Adapter<VacanciesHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull VacanciesHolder holder, int position){
-        holder.bind(vacancyList.get(position));
+        holder.bind(vacancyList.get(position), mOnItemClickListener);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class VacanciesAdapter extends RecyclerView.Adapter<VacanciesHolder>{
         return vacancyList.size();
     }
 
-    void setItems(Collection<Vacancy.ItemsBean> vacancies){
+    void setItems(Collection<Vacancies.ItemsBean> vacancies){
        vacancyList.addAll(vacancies);
        notifyDataSetChanged();
     }
@@ -56,6 +54,6 @@ public class VacanciesAdapter extends RecyclerView.Adapter<VacanciesHolder>{
    }
 
     public interface OnItemClickListener {
-        void onItemClick(Vacancy.ItemsBean vacancy);
+        void onItemClick(String vacancyId);
     }
 }

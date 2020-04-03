@@ -1,7 +1,7 @@
 package com.example.headhunter.utils;
 
 import com.example.headhunter.BuildConfig;
-import com.example.headhunter.data.data.api.HeadHunterApi;
+import com.example.headhunter.data.api.HeadHunterApi;
 import com.google.gson.Gson;
 
 import java.io.IOException;

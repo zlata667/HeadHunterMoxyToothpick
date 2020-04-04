@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
         VacanciesAdapter.OnItemClickListener{
 
     public static final String SEARCH_TEXT = "SEARCH_TEXT";
+    public static final String SEARCH_REGION = "SEARCH_REGION";
 
     private VacanciesAdapter vacancyAdapter;
     private RecyclerView recyclerView;
@@ -38,6 +40,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     private View errorView;
     private Disposable disposable;
     private String searchText;
+    private String searchRegion;
 
     static Fragment newInstance(Bundle args){
         VacanciesFragment fragment = new VacanciesFragment();
@@ -76,6 +79,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
 
         if (getArguments() != null){
             searchText = getArguments().getString(SEARCH_TEXT);
+            searchRegion = getArguments().getString(SEARCH_REGION);
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -104,7 +108,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     }
 
     private void getVacancies(){
-        disposable = ApiUtils.getApiService().getVacancies(searchText)
+        disposable = ApiUtils.getApiService().getVacancies(searchText, searchRegion)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable1 -> refreshOwner.setRefreshState(true))

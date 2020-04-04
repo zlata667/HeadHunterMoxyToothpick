@@ -112,7 +112,9 @@ public class VacancyFragment extends Fragment implements Refreshable{
     private void bind(Vacancy vacancy){
         vacancyName.setText(vacancy.getName());
         employerName.setText(vacancy.getEmployer().getName());
-        salary.setText(String.valueOf(vacancy.getSalary().getFrom()).concat(" ").concat(vacancy.getSalary().getCurrency()));
+        if (vacancy.getSalary() != null){
+            salary.setText(String.valueOf(vacancy.getSalary().getFrom()).concat(" ").concat(vacancy.getSalary().getCurrency()));
+        }
         vacancyDescription.setText(Html.fromHtml(vacancy.getDescription()));
     }
 

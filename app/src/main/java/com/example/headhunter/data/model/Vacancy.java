@@ -6,9 +6,9 @@ import java.util.List;
 
 public class Vacancy{
 
+    private String name;
     private String description;
     private SalaryBean salary;
-    private String name;
     private EmployerBean employer;
 
     public String getDescription(){

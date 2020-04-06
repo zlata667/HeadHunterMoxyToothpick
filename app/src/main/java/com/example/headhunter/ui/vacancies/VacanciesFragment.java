@@ -16,20 +16,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.headhunter.R;
+import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
 import com.example.headhunter.common.Refreshable;
 
+import com.example.headhunter.data.model.Vacancies;
 import com.example.headhunter.ui.startApp.StartSearchActivity;
 import com.example.headhunter.ui.vacancy.VacancyActivity;
 import com.example.headhunter.ui.vacancy.VacancyFragment;
 import com.example.headhunter.utils.ApiUtils;
 
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class VacanciesFragment extends Fragment implements Refreshable,
-        VacanciesAdapter.OnItemClickListener{
+public class VacanciesFragment extends PresenterFragment<VacanciesPresenter>
+        implements VacanciesView, Refreshable, VacanciesAdapter.OnItemClickListener{
 
     public static final String SEARCH_TEXT = "SEARCH_TEXT";
     public static final String SEARCH_REGION = "SEARCH_REGION";
@@ -38,7 +42,7 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     private RecyclerView recyclerView;
     private RefreshOwner refreshOwner;
     private View errorView;
-    private Disposable disposable;
+    private VacanciesPresenter presenter;
     private String searchText;
     private String searchRegion;
 
@@ -82,6 +86,8 @@ public class VacanciesFragment extends Fragment implements Refreshable,
             searchRegion = getArguments().getString(SEARCH_REGION);
         }
 
+        presenter = new VacanciesPresenter(this);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -96,42 +102,53 @@ public class VacanciesFragment extends Fragment implements Refreshable,
     @Override
     public void onDetach() {
         refreshOwner = null;
-        if (disposable != null) {
-            disposable.dispose();
-        }
         super.onDetach();
     }
 
     @Override
     public void onRefreshData(){
-        getVacancies();
-    }
-
-    private void getVacancies(){
-        disposable = ApiUtils.getApiService().getVacancies(searchText, searchRegion)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable1 -> refreshOwner.setRefreshState(true))
-                .doFinally(() -> refreshOwner.setRefreshState(false))
-                .subscribe(
-                        vacancies -> {
-                            errorView.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                            vacancyAdapter.setItems(vacancies.getItems());
-                        },
-                        throwable -> {
-                            recyclerView.setVisibility(View.GONE);
-                            errorView.setVisibility(View.VISIBLE);
-                        }
-                );
+        presenter.getVacancies(searchText, searchRegion);
     }
 
     @Override
-    public void onItemClick(String id){
+    protected VacanciesPresenter getPresenter(){
+        return presenter;
+    }
+
+    @Override
+    public void showVacancies(@NonNull List<Vacancies.ItemsBean> vacancies){
+        errorView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        vacancyAdapter.setItems(vacancies);
+    }
+
+    @Override
+    public void openVacancyFragment(@NonNull String vacancyId){
         Intent intent = new Intent(getActivity(), VacancyActivity.class);
         Bundle args = new Bundle();
-        args.putString(VacancyFragment.VACANCY_ID, id);
+        args.putString(VacancyFragment.VACANCY_ID, vacancyId);
         intent.putExtra(VacancyActivity.VACANCY_KEY, args);
         startActivity(intent);
+    }
+
+    @Override
+    public void showRefresh(){
+        refreshOwner.setRefreshState(true);
+    }
+
+    @Override
+    public void hideRefresh(){
+        refreshOwner.setRefreshState(false);
+    }
+
+    @Override
+    public void showError(){
+        recyclerView.setVisibility(View.GONE);
+        errorView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onItemClick(String vacancyId){
+        presenter.openVacancyFragment(vacancyId);
     }
 }

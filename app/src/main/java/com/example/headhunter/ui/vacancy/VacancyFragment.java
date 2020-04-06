@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.example.headhunter.R;
+import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
 import com.example.headhunter.common.Refreshable;
 import com.example.headhunter.data.model.Vacancy;
@@ -25,14 +26,16 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class VacancyFragment extends Fragment implements Refreshable{
+public class VacancyFragment extends PresenterFragment<VacancyPresenter>
+        implements VacancyView, Refreshable{
 
     public static final String VACANCY_ID = "VACANCY_ID";
 
     private RefreshOwner refreshOwner;
-    private Disposable disposable;
     private NestedScrollView vacancyView;
     private View errorView;
+
+    private VacancyPresenter presenter;
 
     private TextView vacancyName;
     private TextView employerName;
@@ -82,6 +85,8 @@ public class VacancyFragment extends Fragment implements Refreshable{
             getActivity().setTitle("Vacancy");
         }
 
+        presenter = new VacancyPresenter(this);
+
         vacancyView.setVisibility(View.VISIBLE);
 
         onRefreshData();
@@ -89,24 +94,7 @@ public class VacancyFragment extends Fragment implements Refreshable{
 
     @Override
     public void onRefreshData(){
-        getVacancy();
-    }
-
-    private void getVacancy(){
-        disposable = ApiUtils.getApiService().getVacancy(vacancyId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable1 -> refreshOwner.setRefreshState(true))
-                .doFinally(() -> refreshOwner.setRefreshState(false))
-                .subscribe(vacancy -> {
-                            errorView.setVisibility(View.GONE);
-                            vacancyView.setVisibility(View.VISIBLE);
-                            bind(vacancy);
-                        },
-                        throwable -> {
-                            errorView.setVisibility(View.VISIBLE);
-                            vacancyView.setVisibility(View.GONE);
-                        });
+        presenter.getVacancy(vacancyId);
     }
 
     private void bind(Vacancy vacancy){
@@ -119,11 +107,36 @@ public class VacancyFragment extends Fragment implements Refreshable{
     }
 
     @Override
+    protected VacancyPresenter getPresenter(){
+        return null;
+    }
+
+    @Override
     public void onDetach(){
         refreshOwner = null;
-        if (disposable!= null) {
-            disposable.dispose();
-        }
         super.onDetach();
+    }
+
+    @Override
+    public void showRefresh(){
+        refreshOwner.setRefreshState(true);
+    }
+
+    @Override
+    public void hideRefresh(){
+        refreshOwner.setRefreshState(false);
+    }
+
+    @Override
+    public void showError(){
+        errorView.setVisibility(View.VISIBLE);
+        vacancyView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showVacancy(@NonNull Vacancy vacancy){
+        errorView.setVisibility(View.GONE);
+        vacancyView.setVisibility(View.VISIBLE);
+        bind(vacancy);
     }
 }

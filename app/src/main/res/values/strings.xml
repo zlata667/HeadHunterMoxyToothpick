@@ -2,4 +2,7 @@
     <string name="app_name">HeadHunter</string>
     <string name="error">Something went wrong. Try again.</string>
     <string name="vacancy">Vacancy</string>
+    <string name="find_vacancy">Найдите свою вакансию</string>
+    <string name="choose_region">Выберите регион</string>
+    <string name="find_button">Найти</string>
 </resources>

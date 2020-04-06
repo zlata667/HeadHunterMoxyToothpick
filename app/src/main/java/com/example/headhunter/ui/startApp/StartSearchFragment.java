@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.headhunter.R;
+import com.example.headhunter.common.PresenterFragment;
+import com.example.headhunter.common.RefreshOwner;
+import com.example.headhunter.common.Refreshable;
 import com.example.headhunter.data.model.Country;
 import com.example.headhunter.ui.vacancies.VacanciesActivity;
 import com.example.headhunter.ui.vacancies.VacanciesFragment;
@@ -30,17 +33,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class StartSearchFragment extends Fragment{
+public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
+        implements StartSearchView, Refreshable{
 
-    private Disposable disposable;
+    private RefreshOwner refreshOwner;
     private Map<String, String> regionMap = new HashMap<>();
-    private List<String> regionNamesList;
-
     private View searchView;
-    private View errorView;
-
     private AutoCompleteTextView autoCompleteTextView;
     private EditText editTextSearch;
+
+    private StartSearchPresenter presenter;
 
     static Fragment newInstance(){
         return new StartSearchFragment();
@@ -49,6 +51,7 @@ public class StartSearchFragment extends Fragment{
     @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
+        refreshOwner = context instanceof RefreshOwner ? (RefreshOwner) context : null;
     }
 
     @Nullable
@@ -60,8 +63,6 @@ public class StartSearchFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         searchView = view.findViewById(R.id.view_search);
-        errorView = view.findViewById(R.id.errorView);
-        
         editTextSearch = view.findViewById(R.id.et_search);
         view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             onButtonClick();
@@ -69,7 +70,55 @@ public class StartSearchFragment extends Fragment{
         autoCompleteTextView = view.findViewById(R.id.et_city);
     }
 
-    private void onButtonClick(){
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        searchView.setVisibility(View.VISIBLE);
+
+        presenter = new StartSearchPresenter(this);
+
+        onRefreshData();
+    }
+
+    @Override
+    protected StartSearchPresenter getPresenter(){
+        return null;
+    }
+
+    @Override
+    public void onDetach(){
+        refreshOwner = null;
+        super.onDetach();
+    }
+
+    @Override
+    public void onRefreshData(){
+        presenter.loadRegions();
+    }
+
+    @Override
+    public void showRefresh(){
+        refreshOwner.setRefreshState(true);
+    }
+
+    @Override
+    public void hideRefresh(){
+        refreshOwner.setRefreshState(false);
+    }
+
+    @Override
+    public void showError(){
+        Toast.makeText(getContext(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void loadRegions(List<Country> countries){
+        searchView.setVisibility(View.VISIBLE);
+        bind(countries);
+    }
+
+    @Override
+    public void openVacanciesFragment(){
         Intent intent = new Intent(getActivity(), VacanciesActivity.class);
         Bundle args = new Bundle();
 
@@ -83,20 +132,8 @@ public class StartSearchFragment extends Fragment{
         startActivity(intent);
     }
 
-    private void getCities(){
-        disposable = ApiUtils.getApiService().getCities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        countries -> {
-                            errorView.setVisibility(View.GONE);
-                            searchView.setVisibility(View.VISIBLE);
-                            bind(countries);
-                        },
-                        throwable -> {
-                            Toast.makeText(getContext(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
-                        }
-                );
+    private void onButtonClick(){
+        presenter.openVacanciesFragment();
     }
 
     private void bind(List<Country> countries){
@@ -106,24 +143,9 @@ public class StartSearchFragment extends Fragment{
             }
         }
 
-        regionNamesList = new ArrayList<>(regionMap.keySet());
+        List<String> regionNamesList = new ArrayList<>(regionMap.keySet());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.support_simple_spinner_dropdown_item, regionNamesList);
         autoCompleteTextView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        searchView.setVisibility(View.VISIBLE);
-        getCities();
-    }
-
-    @Override
-    public void onDetach(){
-        if (disposable!= null) {
-            disposable.dispose();
-        }
-        super.onDetach();
     }
 }

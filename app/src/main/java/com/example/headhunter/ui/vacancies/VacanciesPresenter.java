@@ -1,12 +1,14 @@
 package com.example.headhunter.ui.vacancies;
 
+import com.arellomobile.mvp.InjectViewState;
 import com.example.headhunter.common.BasePresenter;
 import com.example.headhunter.utils.ApiUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class VacanciesPresenter extends BasePresenter{
+@InjectViewState
+public class VacanciesPresenter extends BasePresenter<VacanciesView>{
 
     private final VacanciesView mView;
 

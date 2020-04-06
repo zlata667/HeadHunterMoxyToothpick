@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.headhunter.R;
 import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
@@ -26,7 +28,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class VacancyFragment extends PresenterFragment<VacancyPresenter>
+public class VacancyFragment extends PresenterFragment
         implements VacancyView, Refreshable{
 
     public static final String VACANCY_ID = "VACANCY_ID";
@@ -34,15 +36,24 @@ public class VacancyFragment extends PresenterFragment<VacancyPresenter>
     private RefreshOwner refreshOwner;
     private NestedScrollView vacancyView;
     private View errorView;
-
-    private VacancyPresenter presenter;
-
     private TextView vacancyName;
     private TextView employerName;
     private TextView salary;
     private TextView vacancyDescription;
-
     private String vacancyId;
+
+    @InjectPresenter
+    VacancyPresenter presenter;
+
+    @ProvidePresenter
+    VacancyPresenter providePresenter(){
+        return new VacancyPresenter(this);
+    }
+
+    @Override
+    protected VacancyPresenter getPresenter(){
+        return presenter;
+    }
 
     static Fragment newInstance(Bundle args){
         VacancyFragment fragment = new VacancyFragment();
@@ -53,7 +64,9 @@ public class VacancyFragment extends PresenterFragment<VacancyPresenter>
     @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
-        refreshOwner = context instanceof RefreshOwner ? (RefreshOwner) context : null;
+        if (context instanceof RefreshOwner) {
+            refreshOwner = ((RefreshOwner) context);
+        }
     }
 
     @Nullable
@@ -85,10 +98,7 @@ public class VacancyFragment extends PresenterFragment<VacancyPresenter>
             getActivity().setTitle("Vacancy");
         }
 
-        presenter = new VacancyPresenter(this);
-
         vacancyView.setVisibility(View.VISIBLE);
-
         onRefreshData();
     }
 
@@ -104,11 +114,6 @@ public class VacancyFragment extends PresenterFragment<VacancyPresenter>
             salary.setText(String.valueOf(vacancy.getSalary().getFrom()).concat(" ").concat(vacancy.getSalary().getCurrency()));
         }
         vacancyDescription.setText(Html.fromHtml(vacancy.getDescription()));
-    }
-
-    @Override
-    protected VacancyPresenter getPresenter(){
-        return null;
     }
 
     @Override

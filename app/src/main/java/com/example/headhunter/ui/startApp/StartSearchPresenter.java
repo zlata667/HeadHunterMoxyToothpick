@@ -3,13 +3,15 @@ package com.example.headhunter.ui.startApp;
 import android.view.View;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.InjectViewState;
 import com.example.headhunter.common.BasePresenter;
 import com.example.headhunter.utils.ApiUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class StartSearchPresenter extends BasePresenter{
+@InjectViewState
+public class StartSearchPresenter extends BasePresenter<StartSearchView>{
 
     private final StartSearchView mView;
 

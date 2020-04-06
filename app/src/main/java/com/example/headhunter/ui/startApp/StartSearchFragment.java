@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.headhunter.R;
 import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
@@ -33,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
+public class StartSearchFragment extends PresenterFragment
         implements StartSearchView, Refreshable{
 
     private RefreshOwner refreshOwner;
@@ -42,7 +44,18 @@ public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
     private AutoCompleteTextView autoCompleteTextView;
     private EditText editTextSearch;
 
-    private StartSearchPresenter presenter;
+    @InjectPresenter
+    StartSearchPresenter presenter;
+
+    @ProvidePresenter
+    StartSearchPresenter providePresenter(){
+        return new StartSearchPresenter(this);
+    }
+
+    @Override
+    protected StartSearchPresenter getPresenter(){
+        return presenter;
+    }
 
     static Fragment newInstance(){
         return new StartSearchFragment();
@@ -51,7 +64,9 @@ public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
     @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
-        refreshOwner = context instanceof RefreshOwner ? (RefreshOwner) context : null;
+        if (context instanceof RefreshOwner) {
+            refreshOwner = ((RefreshOwner) context);
+        }
     }
 
     @Nullable
@@ -75,14 +90,7 @@ public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
         super.onActivityCreated(savedInstanceState);
         searchView.setVisibility(View.VISIBLE);
 
-        presenter = new StartSearchPresenter(this);
-
         onRefreshData();
-    }
-
-    @Override
-    protected StartSearchPresenter getPresenter(){
-        return null;
     }
 
     @Override
@@ -108,7 +116,7 @@ public class StartSearchFragment extends PresenterFragment<StartSearchPresenter>
 
     @Override
     public void showError(){
-        Toast.makeText(getContext(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
     }
 
     @Override

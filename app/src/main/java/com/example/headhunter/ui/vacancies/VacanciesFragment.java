@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.headhunter.R;
 import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
@@ -32,7 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class VacanciesFragment extends PresenterFragment<VacanciesPresenter>
+public class VacanciesFragment extends PresenterFragment
         implements VacanciesView, Refreshable, VacanciesAdapter.OnItemClickListener{
 
     public static final String SEARCH_TEXT = "SEARCH_TEXT";
@@ -42,9 +44,21 @@ public class VacanciesFragment extends PresenterFragment<VacanciesPresenter>
     private RecyclerView recyclerView;
     private RefreshOwner refreshOwner;
     private View errorView;
-    private VacanciesPresenter presenter;
     private String searchText;
     private String searchRegion;
+
+    @InjectPresenter
+    VacanciesPresenter presenter;
+
+    @ProvidePresenter
+    VacanciesPresenter providePresenter(){
+        return new VacanciesPresenter(this);
+    }
+
+    @Override
+    protected VacanciesPresenter getPresenter(){
+        return presenter;
+    }
 
     static Fragment newInstance(Bundle args){
         VacanciesFragment fragment = new VacanciesFragment();
@@ -86,8 +100,6 @@ public class VacanciesFragment extends PresenterFragment<VacanciesPresenter>
             searchRegion = getArguments().getString(SEARCH_REGION);
         }
 
-        presenter = new VacanciesPresenter(this);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -108,11 +120,6 @@ public class VacanciesFragment extends PresenterFragment<VacanciesPresenter>
     @Override
     public void onRefreshData(){
         presenter.getVacancies(searchText, searchRegion);
-    }
-
-    @Override
-    protected VacanciesPresenter getPresenter(){
-        return presenter;
     }
 
     @Override

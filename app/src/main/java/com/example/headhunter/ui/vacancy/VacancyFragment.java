@@ -62,12 +62,6 @@ public class VacancyFragment extends PresenterFragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-    @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
         if (context instanceof RefreshOwner) {

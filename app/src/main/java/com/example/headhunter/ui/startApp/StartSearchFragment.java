@@ -89,7 +89,6 @@ public class StartSearchFragment extends PresenterFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         searchView.setVisibility(View.VISIBLE);
-
         onRefreshData();
     }
 
@@ -116,7 +115,9 @@ public class StartSearchFragment extends PresenterFragment
 
     @Override
     public void showError(){
-        //Toast.makeText(getActivity(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
+        if (autoCompleteTextView.getText() == null){
+            Toast.makeText(getActivity(), "Не удалось загрузить список регионов", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

@@ -22,9 +22,11 @@ public class VacancyPresenter extends BasePresenter<VacancyView>{
         compositeDisposable.add(ApiUtils.getApiService().getVacancy(vacancyId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable1 -> mView.showRefresh())
-                .doFinally(() -> mView.hideRefresh())
-                .subscribe(vacancy -> mView.showVacancy(vacancy),
-                        throwable -> mView.showError()));
+                .doOnSubscribe(disposable1 -> getViewState().showRefresh())
+                .doFinally(() -> getViewState().hideRefresh())
+                .subscribe(
+                        vacancy -> getViewState().showVacancy(vacancy),
+                        throwable -> getViewState().showError())
+        );
     }
 }

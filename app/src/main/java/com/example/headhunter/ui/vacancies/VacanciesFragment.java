@@ -67,6 +67,12 @@ public class VacanciesFragment extends PresenterFragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -150,8 +156,11 @@ public class VacanciesFragment extends PresenterFragment
 
     @Override
     public void showError(){
-        recyclerView.setVisibility(View.GONE);
-        errorView.setVisibility(View.VISIBLE);
+        if (recyclerView.getVisibility() != View.VISIBLE){
+            recyclerView.setVisibility(View.GONE);
+            errorView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override

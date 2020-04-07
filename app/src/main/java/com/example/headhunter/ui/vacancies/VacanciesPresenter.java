@@ -21,15 +21,15 @@ public class VacanciesPresenter extends BasePresenter<VacanciesView>{
         compositeDisposable.add(ApiUtils.getApiService().getVacancies(searchText, searchRegion)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable1 -> mView.showRefresh())
-                .doFinally(mView::hideRefresh)
+                .doOnSubscribe(disposable1 -> getViewState().showRefresh())
+                .doFinally(() -> getViewState().hideRefresh())
                 .subscribe(
-                        vacancies -> mView.showVacancies(vacancies.getItems()),
-                        throwable -> mView.showError()
+                        vacancies -> getViewState().showVacancies(vacancies.getItems()),
+                        throwable -> getViewState().showError()
                 ));
     }
 
     public void openVacancyFragment(String vacancyId){
-        mView.openVacancyFragment(vacancyId);
+        getViewState().openVacancyFragment(vacancyId);
     }
 }

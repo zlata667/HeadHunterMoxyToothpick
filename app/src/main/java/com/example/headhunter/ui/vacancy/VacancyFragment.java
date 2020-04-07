@@ -62,6 +62,12 @@ public class VacancyFragment extends PresenterFragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
         if (context instanceof RefreshOwner) {
@@ -97,8 +103,6 @@ public class VacancyFragment extends PresenterFragment
         if (getActivity() != null){
             getActivity().setTitle("Vacancy");
         }
-
-        vacancyView.setVisibility(View.VISIBLE);
         onRefreshData();
     }
 
@@ -134,8 +138,11 @@ public class VacancyFragment extends PresenterFragment
 
     @Override
     public void showError(){
-        errorView.setVisibility(View.VISIBLE);
-        vacancyView.setVisibility(View.GONE);
+        if (vacancyView.getVisibility() != View.VISIBLE){
+            errorView.setVisibility(View.VISIBLE);
+            vacancyView.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

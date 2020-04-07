@@ -8,9 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.example.headhunter.R;
 
-public abstract class SingleFragmentActivity extends AppCompatActivity implements
+public abstract class SingleFragmentActivity extends MvpAppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener, RefreshOwner{
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -55,6 +56,11 @@ public abstract class SingleFragmentActivity extends AppCompatActivity implement
 
     @Override
     public void setRefreshState(boolean refreshing) {
-        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(refreshing));
+        swipeRefreshLayout.post(new Runnable(){
+            @Override
+            public void run(){
+                swipeRefreshLayout.setRefreshing(refreshing);
+            }
+        });
     }
 }

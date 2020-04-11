@@ -4,45 +4,44 @@ import com.example.headhunter.BuildConfig;
 import com.example.headhunter.data.api.HeadHunterApi;
 import com.google.gson.Gson;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import toothpick.config.Module;
 
-@Module()
-public class NetworkModule{
+public class NetworkModule extends Module{
 
-    @Provides
-    @Singleton
+    private final Gson mGson = provideGson();
+    private final OkHttpClient mClient = provideClient();
+    private final Retrofit mRetrofit = provideRetrofit();
+
+    public NetworkModule(){
+        bind(Gson.class).toInstance(mGson);
+        bind(OkHttpClient.class).toInstance(mClient);
+        bind(Retrofit.class).toInstance(mRetrofit);
+        bind(HeadHunterApi.class).toInstance(getApiService());
+    }
+
     OkHttpClient provideClient(){
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
         return builder.build();
     }
 
-    @Provides
-    @Singleton
     Gson provideGson(){
         return new Gson();
     }
 
-    @Provides
-    @Singleton
-    Retrofit provideRetrofit(Gson gson, OkHttpClient client){
+    Retrofit provideRetrofit(){
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(mClient)
+                .addConverterFactory(GsonConverterFactory.create(mGson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 
-    @Provides
-    @Singleton
-    public static HeadHunterApi getApiService(Retrofit retrofit){
-        return retrofit.create(HeadHunterApi.class);
+    HeadHunterApi getApiService(){
+        return mRetrofit.create(HeadHunterApi.class);
     }
 }

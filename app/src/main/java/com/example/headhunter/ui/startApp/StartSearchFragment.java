@@ -23,10 +23,8 @@ import com.example.headhunter.common.PresenterFragment;
 import com.example.headhunter.common.RefreshOwner;
 import com.example.headhunter.common.Refreshable;
 import com.example.headhunter.data.model.Country;
-import com.example.headhunter.di.AppComponent;
 import com.example.headhunter.ui.vacancies.VacanciesActivity;
 import com.example.headhunter.ui.vacancies.VacanciesFragment;
-import com.example.headhunter.utils.ApiUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,9 +33,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import toothpick.Toothpick;
 
 public class StartSearchFragment extends PresenterFragment
         implements StartSearchView, Refreshable{
@@ -68,7 +64,7 @@ public class StartSearchFragment extends PresenterFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState){
-        AppDelegate.getAppComponent().inject(this);
+        Toothpick.inject(this, AppDelegate.getAppScope());
         super.onCreate(savedInstanceState);
     }
 

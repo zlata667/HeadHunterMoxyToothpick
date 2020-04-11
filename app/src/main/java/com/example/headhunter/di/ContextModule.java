@@ -2,21 +2,18 @@ package com.example.headhunter.di;
 
 import android.content.Context;
 
-import javax.inject.Singleton;
+import toothpick.config.Module;
 
-import dagger.Module;
-import dagger.Provides;
 
-@Module()
-public class ContextModule{
-    private Context mContext;
+public class ContextModule extends Module{
+
+    private final Context mContext;
 
     public ContextModule(Context context) {
         mContext = context;
+        bind(Context.class).toInstance(mContext);
     }
 
-    @Provides
-    @Singleton
     public Context provideContext() {
         return mContext;
     }

@@ -25,14 +25,11 @@ public class StartSearchPresenter extends BasePresenter<StartSearchView>{
     StartSearchPresenter(){
     }
 
-
     public void loadRegions(){
         compositeDisposable.add(mApi.getCities()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable1 -> {
-                    getViewState().showRefresh();
-                })
+                .doOnSubscribe(disposable1 -> getViewState().showRefresh())
                 .doFinally(() -> getViewState().hideRefresh())
                 .subscribe(
                         countries -> getViewState().loadRegions(countries),
